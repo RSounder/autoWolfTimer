@@ -35,13 +35,12 @@ except ValueError:
 # make sure the total time can't be more than 4 hours, or else Bianca is gonna mail you again. if time is less than 2 mins, the portal will likely throw a tantrum. 
 if total_seconds < 2 * 60 or total_seconds > 4 * 3600:
     print("Error: The duration must be between 0.02 and 4.00 hours.")
-    sys.exit(1)
-
-def beep():
-    sys.stdout.write("\a") # plays sound without printing new line
+    sys.exit(1)    
 
 def punch_in_or_out():
-
+    
+    sys.stdout.write("\a") # plays sound to alert us without printing new line
+    
     # Setup Chrome using webdriver-manager
     service = Service(ChromeDriverManager().install())
     driver = webdriver.Chrome(service=service)
@@ -63,8 +62,7 @@ def punch_in_or_out():
     login_button = driver.find_element(By.ID, "formSubmit")
     login_button.click()
     
-    for i in range(5): # find a way to remove this i
-        beep()
+    sys.stdout.write("\a") # plays sound without printing new line
     
     # After clicking login, we are greeted with a "Trust this device?" page. It doesn't matter which button we click; here we click the 'I trust' button, saying this is your device, not some shared system.
     WebDriverWait(driver, webDriverDelay).until(EC.presence_of_element_located((By.ID, 'trust-browser-button')))
