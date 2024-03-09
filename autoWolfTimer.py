@@ -21,15 +21,25 @@ webDriverDelay = 1000
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Automate WolfTime clockin and clockout before and after a given duration.')
-parser.add_argument('hours', type=str, help='Duration in hours and minutes (e.g., 3.25 for 3 hours and 25 minutes)')
+parser.add_argument('hours', type=str, help='Duration in hours and minutes (e.g., 1.5 => 1 hour and 50 minutes (default) or if --dur flag is used 1.5 => 1 hour and 30 minutes.)')
+parser.add_argument('--dur', action='store_true', help='Flag to indicate if the duration is provided in total hours (e.g., 1.5 for 1 hour and 30 minutes)')
 args = parser.parse_args()
 
 # Convert hours and minutes to seconds
 try:
-    hours_part, mins_part = args.hours.split('.') # considering in format <hours>.<mins>
-    total_seconds = int(hours_part) * 3600 + int(mins_part) * 60
+    if args.dur:
+        # If the total_hours flag is used, interpret the input as total hours
+        hours_part = float(args.hours)
+        mins_part = (hours_part - int(hours_part)) * 60
+        total_seconds = int(hours_part) * 3600 + int(mins_part) * 60
+        print("Input format: Total Hours")
+    else:
+        # Default to hours.minutes format
+        hours_part, mins_part = args.hours.split('.') # considering in format <hours>.<mins>
+        total_seconds = int(hours_part) * 3600 + int(mins_part) * 60
+        print("Input format: Hours and Minutes")
 except ValueError:
-    print("Error: Please provide the time in correct format (e.g., 3.25 for 3 hours and 25 minutes)")
+    print("Error: Please provide the time in correct format.")
     sys.exit(1)
 
 # make sure the total time can't be more than 4 hours, or else Bianca is gonna mail you again. if time is less than 2 mins, the portal will likely throw a tantrum. 
@@ -39,7 +49,7 @@ if total_seconds < 2 * 60 or total_seconds > 4 * 3600:
 
 def punch_in_or_out():
     
-    sys.stdout.write("\a") # plays sound to alert us without printing new line
+    sys.stdout.write("\a") # plays a sound to alert us without printing a new line # works only in cmd promt(Windows)/terminal(Unix)
     
     # Setup Chrome using webdriver-manager
     service = Service(ChromeDriverManager().install())
@@ -69,14 +79,14 @@ def punch_in_or_out():
     trust_button = driver.find_element(By.ID, "trust-browser-button")
     trust_button.click()
 
-    # when mypack is loaded without cache/cookies it defaults to the first page in available forms which are "Employee self-services" for all student employees.
+    # When mypack is loaded without cache/cookies it defaults to the first page in available forms which are "Employee self-services" for all student employees.
 
     time.sleep(12) # This is a simple workaround for the page loading issue; I hope the portal loads in 12 seconds, if the connection is slower, adjust this delay.
     wolf_time_button = driver.find_element(By.ID, "win0divPTNUI_LAND_REC_GROUPLET$7")
     driver.execute_script("arguments[0].click();", wolf_time_button)
 
-    # inside wolfTime, the buttons are arranged within div via iframe. So we can't just search for it by id and click.
-    ## First, switch to the iframe by its ID
+    # Inside wolfTime, the buttons are arranged within div via iframe. So we can't just search for it by id and click.
+    # First, switch to the iframe by its ID
     time.sleep(2)
     try:
         WebDriverWait(driver, webDriverDelay).until(EC.presence_of_element_located((By.ID, 'win0groupletPTNUI_LAND_REC_GROUPLET$0_iframe')))
