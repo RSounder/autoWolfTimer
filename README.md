@@ -4,7 +4,7 @@ Just make sure you have python (I used version 3.11.1), chrome (I used version 1
 ), and the script should work like a charm.
 1. Enter your Unity ID and password in the script (for vars username_str and password_str)
 2. Invoke script "python autoWolfTimer.py <hours>.<mins>" Please note that hours.mins is compatible. mins can't be more than 59 and total time can't exceed 4 hrs. (Example: python autoWolfTimer.py 1.25 will be interpreted as 1 hour 25 mins).
-3. If you want to invoke script with total duration as float (for example we see 18.33 hrs logged in wolf time and require 20-18.33=1.67 hrs to be clocked), use --dur flag (python autoWolfTimer.py --dur 1.67).
-4. That's pretty much it. I know there are some warnings, but I didn't want to fix a working code. Please raise change requests in-case you'd like to propose changes.
+3. If you want to invoke the script with total duration as float (for example we see 18.33 hrs logged in wolf time and require 20-18.33=1.67 hrs to be clocked), use -d flag (python autoWolfTimer.py -d 1.67).
+4. That's pretty much it. I know there are some warnings, but I didn't want to fix a working code. Please raise change requests in case you'd like to propose changes.
 
-It is to be noted that in-case 2 factor authentication is enabled on your account, you may be prompted twice (once when clocking in and once when clocking out). Be wary of the 2FA prompts, it has a time-out, and if not authenticated, the auto clockin/out process will fail. 
+It is to be noted that in-case 2-factor authentication is enabled on your account, you may be prompted once per Duo session (once when clocking in for the first time in a day probably). Be wary of the 2FA prompts, it has a time-out, and if not authenticated, the auto clock-in process will fail. We have added cookie storage so Duo pushes for clock-ins will be recorded and clock-out will be done automatically. 
